@@ -1,70 +1,92 @@
-# Music Recommendation: Data Analysis and Preparation
+# Spotify Music Recommendation System Using K-Means Clustering
+
+## Project Overview
+
+This project explores how Spotify audio features can be used to identify similarities between tracks and generate music recommendations.
+
+Using a dataset of Spotify tracks, the project applies **K-Means clustering** to group tracks according to their audio characteristics. A recommendation system then uses Euclidean distance to identify similar tracks within the same cluster.
+
+The project covers the complete process, from data cleaning and exploratory analysis to machine learning, recommendation generation and evaluation.
 
 ## Project Objective
 
-The objective of this project is to investigate how Spotify track features can be used to identify similarities between songs and support the development of a music recommendation system. Using a dataset of Spotify tracks, the project will focus on data cleaning, exploratory data analysis and identifying the audio features that may be useful for recommending music. This analysis will establish a foundation for developing a recommendation algorithm in a future stage.
+The objective is to investigate whether unsupervised machine learning can identify meaningful groups of Spotify tracks based on their audio characteristics, and how these groups can support a content-based music recommendation system.
 
-## Research Questions
+The project aims to:
 
-1. **Which audio features are most useful for identifying similarities between songs?**  
-   Investigate features such as danceability, energy, acousticness, valence and tempo to understand how they vary across tracks.
+- Explore and prepare Spotify track data.
+- Investigate relationships between audio features.
+- Identify groups of similar tracks using K-Means clustering.
+- Develop a recommendation system that suggests tracks based on audio similarity.
+- Evaluate the recommendations using audio-feature distances and genre overlap.
 
-2. **What relationships exist between Spotify's audio features?**  
-   Explore correlations and patterns between audio features to determine whether some features are related and how this might affect the measurement of musical similarity.
+## Research Question
 
-3. **How suitable is the dataset for developing a music recommendation system?**  
-   Assess the dataset's completeness, consistency and quality, identifying any missing values, duplicate records or other issues that could affect future recommendations.
+**Can unsupervised machine learning identify meaningful groups of Spotify tracks based on their audio characteristics, and how can these groups be used to support music recommendations?**
+
+Supporting questions:
+
+1. Which audio features help distinguish between groups of tracks?
+2. How effectively can K-Means clustering group tracks with similar audio characteristics?
+3. Can Euclidean distance identify similar tracks within the same cluster?
+4. How can recommendation diversity be improved while maintaining audio similarity?
 
 ## Dataset
 
 This project uses the **Spotify Tracks Dataset**, sourced from Hugging Face.
 
 - **Dataset:** [Spotify Tracks Dataset](https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset)
-- **Original size:** 114,000 rows and 21 columns
-- **Data type:** Track metadata, popularity information, genre labels and numerical audio features.
+- **Original size:** 114,000 rows and 21 columns.
+- **Data:** Track metadata, popularity information, genre labels and numerical audio features.
 
-The dataset contains information about individual tracks, including their artists, albums, genres and audio characteristics. Audio features such as danceability, energy, acousticness, instrumentalness and valence can help describe the musical properties of a track.
-
-These features provide a starting point for investigating how tracks could be compared in a content-based music recommendation system.
-
-## Project Scope
-
-The focus of this project is **data analysis and preparation for a future music recommendation algorithm**. It does not build or evaluate a complete recommendation system.
-
-The project explores the dataset, investigates relationships between audio features, compares selected features across genres and prepares numerical data for potential use in a similarity-based model.
+The dataset includes audio characteristics such as danceability, energy, acousticness, instrumentalness, valence and tempo. These features provide a basis for comparing tracks according to their musical properties.
 
 ## Tools and Technologies
 
-The project uses the following tools and libraries:
-
-- **Python** — data analysis and preparation.
-- **Jupyter Notebook** — documenting the analysis, code and findings.
-- **pandas** — loading, cleaning and manipulating the dataset.
-- **NumPy** — numerical operations.
-- **Matplotlib and Seaborn** — visualising distributions, relationships and differences between genres.
-- **scikit-learn** — standardising numerical features in preparation for future modelling.
+- **Python** – programming language.
+- **Jupyter Notebook** – exploratory analysis, model development and evaluation.
+- **pandas** – data loading, cleaning and manipulation.
+- **NumPy** – numerical operations.
+- **Matplotlib and Seaborn** – data visualisation.
+- **scikit-learn** – feature scaling, K-Means clustering, pipelines and model evaluation.
+- **joblib** – saving and loading trained models.
+- **Hugging Face Hub** – accessing the Spotify dataset.
 
 ## Methodology
 
 The project follows these stages:
 
-1. **Data loading and inspection:** Load the dataset and examine its dimensions, columns, data types and initial quality.
-2. **Data quality assessment:** Investigate missing values, exact duplicate rows, repeated track IDs and the exported index column.
-3. **Data cleaning and consolidation:** Remove the unnecessary index column and consolidate repeated track IDs while preserving their associated genre labels.
-4. **Exploratory data analysis:** Examine descriptive statistics, feature distributions and correlations between numerical audio features.
-5. **Genre comparisons:** Compare selected audio features, including energy and acousticness, across genres to investigate differences in musical characteristics.
-6. **Feature selection:** Select nine numerical audio features for potential use in a future content-based recommendation model.
-7. **Feature standardisation:** Use `StandardScaler` from scikit-learn to place the selected numerical features on comparable scales.
+1. **Data loading and inspection:** Load the dataset from Hugging Face and examine its structure, dimensions, data types and quality.
+2. **Data cleaning:** Remove the unnecessary exported index column and investigate missing values and duplicate records.
+3. **Track consolidation:** Consolidate repeated track IDs while preserving their associated genre labels.
+4. **Exploratory data analysis:** Investigate feature distributions, correlations and differences between genres.
+5. **Feature selection:** Select nine numerical audio features for clustering.
+6. **Feature scaling:** Apply RobustScaler to reduce the influence of outliers when comparing numerical features.
+7. **Model development:** Apply K-Means clustering and compare different values of K and feature-scaling approaches.
+8. **Model evaluation:** Compare clustering performance using silhouette scores and examine cluster characteristics.
+9. **Recommendation development:** Generate recommendations using Euclidean distance between tracks within the same cluster.
+10. **Recommendation evaluation:** Assess audio similarity, genre overlap and artist diversity across example recommendations.
 
 ## Data Cleaning and Preparation
 
-The original dataset contained 114,000 rows. The `Unnamed: 0` column was identified as an unnecessary exported index and removed from the cleaned dataset.
+The original dataset contained 114,000 rows and 21 columns.
 
-One record was missing its artist, album and track names, although its track ID, genre and numerical audio features remained available. The missing metadata was not artificially filled in.
+The `Unnamed: 0` column was identified as an unnecessary exported index and removed.
 
-The dataset also contained repeated track IDs across different genre labels. Since these records had consistent audio-feature values, they were consolidated into **89,741 unique tracks**, with associated genres preserved for each track.
+One record contained missing artist, album and track names, although its track ID, genre and numerical audio features remained available.
 
-Nine numerical audio features were selected for future modelling:
+The dataset also contained repeated track IDs associated with different genre labels. Since these records had consistent audio-feature values, they were consolidated into a single record per track, with associated genres preserved.
+
+Following consolidation, the dataset contained:
+
+- **89,741 unique tracks**
+- **20 columns**
+- No repeated track IDs
+- Genre associations retained as lists
+
+### Selected Audio Features
+
+Nine numerical features were selected for clustering:
 
 - Danceability
 - Energy
@@ -76,83 +98,253 @@ Nine numerical audio features were selected for future modelling:
 - Liveness
 - Loudness
 
-The selected feature matrix was checked for missing values and standardised using `StandardScaler`.
+These features were selected to represent different aspects of a track's musical characteristics.
 
-## Key Findings
+## Exploratory Data Analysis
 
-The exploratory analysis investigated how Spotify audio features vary across tracks and genres, as well as how some features relate to one another.
+Exploratory analysis investigated the distributions and relationships between Spotify audio features.
 
 The analysis included:
 
-- Descriptive statistics to understand the distributions and ranges of audio features.
-- Correlation analysis to identify relationships between numerical features.
-- Comparisons of energy and acousticness across selected genres.
-- Consolidation of repeated track IDs to create a dataset with one row per unique track while retaining genre associations.
+- Descriptive statistics to understand feature ranges and distributions.
+- Correlation analysis to identify relationships between audio features.
+- Comparisons of energy and acousticness across genres.
+- Visualisations to investigate differences in musical characteristics.
 
-These findings help assess which audio features may be useful when comparing tracks for a future recommendation system. The analysis provides a foundation for further investigation rather than demonstrating that a recommendation algorithm already produces accurate recommendations.
+Some notable relationships included:
 
-Classical tracks have the lowest median energy, at approximately 0.14, while metal tracks have the highest, at approximately 0.89. Jazz has a median of around 0.33, compared with approximately 0.62 for pop and 0.70 for rock.
+- Energy and acousticness had a strong negative correlation of approximately **-0.73**.
+- Energy and loudness had a positive correlation of approximately **0.76**.
 
-When cross-referenced with the analyzed energy distribution plot, a clear inverse relationship emerges between these two features across genres:
+Genre comparisons also highlighted differences in musical characteristics. For example, classical tracks had relatively low median energy, while metal tracks had relatively high median energy.
 
-    Classical and Metal act as polar opposites: Classical features maximum acousticness and minimum energy, while Metal features maximum energy and minimum acousticness.
+These findings helped inform the selection of audio features for the clustering model.
 
-    Jazz vs. Rock/Pop: Jazz mirrors Rock and Pop in reverse structural behavior; Jazz keeps a high acoustic/lower energy profile, whereas Rock and Pop lean significantly higher in energy while giving up acoustic dominance.
+## K-Means Clustering
 
-## Limitations
+### Feature Scaling
 
-There are several limitations to this project:
+RobustScaler was selected to scale the numerical audio features.
 
-- The analysis uses audio features and metadata rather than individual listening histories or user preferences.
-- Genre labels do not necessarily capture all the ways listeners perceive musical similarity.
-- Tracks can belong to multiple genres, which makes genre-based comparisons more complex.
-- The analysis does not yet calculate track-to-track similarity or generate recommendations.
-- Recommendation quality has not been evaluated using user feedback or quantitative evaluation metrics.
+Unlike StandardScaler, RobustScaler uses the median and interquartile range, making it less sensitive to extreme values.
 
-Consequently, the findings indicate potential uses for audio features but do not establish how effective a completed recommendation system would be.
+### Selecting the Number of Clusters
 
-## Future Work
+Different values of K were investigated using silhouette scores.
 
-Potential extensions of this project include:
+Both StandardScaler and RobustScaler were considered. RobustScaler produced stronger clustering results for the selected features.
 
-- Calculating similarity between tracks using their standardised audio features.
-- Building a content-based recommendation system that suggests tracks similar to a selected song.
-- Comparing similarity methods, such as cosine similarity and Euclidean distance.
-- Investigating how genre information could complement numerical audio features.
-- Evaluating recommendations using suitable quantitative measures and, where possible, user feedback.
+A five-cluster model was ultimately selected as a balance between clustering performance and interpretability.
+
+The two-cluster model achieved a higher silhouette score, but produced broader groups. Five clusters provided more detailed distinctions between different types of tracks.
+
+### Model Performance
+
+The selected model achieved:
+
+| Evaluation | Silhouette score |
+|---|---:|
+| Training data | 0.3500 |
+| Test data (sample of 5,000 tracks) | 0.3497 |
+
+The similar scores suggest that the clustering structure generalises reasonably consistently to the held-out test data.
+
+### Cluster Profiles
+
+The model identified five clusters with different average audio characteristics.
+
+| Cluster | Main characteristics | Tracks |
+|---|---|---:|
+| 0 | Broad general music profile | 54,305 |
+| 1 | High instrumentalness and lower energy | 17,401 |
+| 2 | High danceability, energy and speechiness | 7,812 |
+| 3 | High speechiness and liveness | 929 |
+| 4 | High energy and liveness | 9,294 |
+
+These profiles provide an indication of the types of tracks grouped together.
+
+For example, Cluster 1 contains tracks with particularly high instrumentalness, while Cluster 3 has very high speechiness, making it more suited to spoken-word and comedy-style content.
+
+The clusters are based on numerical audio features rather than predefined genres.
+
+## Music Recommendation System
+
+A recommendation system was developed using the trained K-Means model and scaled audio features.
+
+### Recommendation Process
+
+The recommendation system follows these steps:
+
+1. The user selects a track by providing its name and artist.
+2. The system locates the selected track in the dataset.
+3. The saved clustering model identifies its cluster.
+4. Candidate tracks are restricted to the same cluster.
+5. Euclidean distance is calculated between the selected track and candidate tracks using their scaled audio features.
+6. Candidates are ranked by distance, with smaller distances indicating greater audio-feature similarity.
+7. The selected track's artist is excluded from recommendations.
+8. Additional artist filtering is applied to avoid repeatedly recommending the same artist.
+
+The system returns up to five recommendations by default, including the track name, artist, genre and Euclidean distance.
+
+### Recommendation Diversity
+
+An artist-diversity filter was introduced to reduce repeated artist recommendations.
+
+This means that recommendations are not simply the five closest tracks. The system considers the closest candidates while avoiding artists that have already appeared in the recommendation list.
+
+This provides a greater variety of recommendations while retaining the audio-similarity approach.
+
+## Recommendation Evaluation
+
+The recommendation system was tested using five example tracks, with one selected from each cluster.
+
+Recommendations were evaluated using:
+
+- Mean Euclidean distance between the selected track and its recommendations.
+- Mean absolute difference across the nine audio features.
+- Genre overlap between the selected track and recommended tracks.
+- Artist diversity within the recommendation list.
+
+### Key Findings
+
+The evaluation highlighted differences between clusters.
+
+- **Cluster 4** produced the strongest overall combination of audio similarity and genre overlap, with a mean Euclidean distance of approximately 0.458 and genre overlap of 80%.
+- **Cluster 0** produced relatively close audio-feature matches, with a mean Euclidean distance of approximately 0.549, despite having no genre overlap in the example evaluation.
+- **Cluster 3** achieved 100% genre overlap, although its mean Euclidean distance was higher at approximately 1.267.
+
+These results demonstrate that audio similarity and genre similarity are not necessarily the same thing. Tracks can have similar audio characteristics despite belonging to different genres.
+
+The evaluation also showed that restricting recommendations to the same cluster does not guarantee identical genres, which is expected because clustering is based on audio features rather than genre labels.
+
+The evaluation uses a small number of example tracks and should therefore be treated as an initial assessment rather than a comprehensive measure of recommendation quality.
+
+## Project Structure
+
+The project uses a modular structure to separate data preparation, preprocessing, clustering and recommendation functionality.
+
+```text
+music-recommendation-analysis/
+│
+├── models/
+│   ├── scaler.joblib
+│   ├── kmeans_model.joblib
+│   └── clustering_pipeline.joblib
+│
+├── src/
+│   ├── preprocessing.py
+│   ├── clustering.py
+│   ├── recommender.py
+│   ├── data_preparation.py
+│   └── pipeline.py
+│
+├── music_analysis.ipynb
+├── README.md
+├── requirements.txt
+└── .gitignore
+```
+
+### Main Components
+
+- `data_preparation.py` – loads the Spotify dataset and consolidates repeated track IDs.
+- `preprocessing.py` – extracts and scales the selected audio features for similarity calculations.
+- `clustering.py` – loads the saved scikit-learn Pipeline and assigns tracks to clusters.
+- `recommender.py` – contains the recommendation functions.
+- `pipeline.py` – connects the components and provides the main functions for loading the recommendation system and generating recommendations.
+- `models/` – stores the fitted scaler, K-Means model and combined clustering Pipeline.
+- `music_analysis.ipynb` – contains the exploratory analysis, model development, evaluation and project findings.
+
+The combined `clustering_pipeline.joblib` contains the fitted RobustScaler and K-Means model, allowing new tracks to be assigned to clusters without retraining the model.
 
 ## How to Run the Project
 
 ### Prerequisites
 
-Install Python and Jupyter Notebook, or use Visual Studio Code with its Python and Jupyter extensions.
+Install Python and use either Jupyter Notebook or Visual Studio Code with the Python and Jupyter extensions.
+
+Clone or download the repository and open the project root directory.
+
+### 1. Install Dependencies
+
+Create and activate a Python environment if necessary.
 
 Install the required libraries using:
 
 ```bash
-pip install pandas numpy matplotlib seaborn scikit-learn datasets
+pip install -r requirements.txt
 ```
 
-If you use a Conda environment, activate it before installing the dependencies.
+### 2. Run the Notebook
 
-### Running the Notebook
+Open `music_analysis.ipynb` and run the cells in order.
 
-1. Clone or download this repository.
-2. Open the project folder in Visual Studio Code or Jupyter Notebook.
-3. Select the Python environment containing the required libraries.
-4. Open `music_analysis.ipynb`.
-5. Run the notebook cells in order, from top to bottom.
+The notebook contains the exploratory analysis, data preparation, model development and evaluation.
 
-The notebook loads the dataset, performs the analysis and prepares the numerical feature matrix.
+### 3. Generate Recommendations
 
-## Repository Structure
+The recommendation system can be accessed through the modular Python files.
 
-```text
-music-recommendation-analysis/
-├── README.md
-├── music_analysis.ipynb
-├── requirements.txt
-└── .gitignore
+From the project root directory, run:
+
+```python
+from src.pipeline import load_recommendation_system, get_recommendations
+
+# Load the dataset and trained recommendation system
+recommendation_data, recommendation_features = load_recommendation_system()
+
+# Generate recommendations for a selected track
+recommendations = get_recommendations(
+    track_name="Tief",
+    artist_name="Paul Kalkbrenner",
+    recommendation_data=recommendation_data,
+    recommendation_features=recommendation_features
+)
+
+print(recommendations)
 ```
 
-The notebook contains the code, visualisations and written analysis. The README summarises the project's purpose, methodology, findings and instructions for reproducing the work.
+The example uses *Tief* by Paul Kalkbrenner. Replace the track name and artist with another exact track and artist combination from the dataset.
+
+The system loads the dataset from Hugging Face and uses the saved models in the `models/` directory. An internet connection is therefore required to load the dataset.
+
+If multiple tracks have the same name and artist, the system displays the matching records and allows a specific match to be selected using its index.
+
+## Limitations
+
+There are several limitations to the current recommendation system:
+
+- Recommendations are based on numerical audio features rather than individual listening histories or user preferences.
+- Genre labels do not necessarily capture every aspect of musical similarity.
+- Tracks within the same cluster may still have noticeable differences in their audio characteristics.
+- The number of clusters affects how broad or specific the recommendations become.
+- Artist filtering can exclude otherwise highly similar tracks.
+- The recommendation system has not been evaluated using real user feedback or listening behaviour.
+- Evaluation was performed using a limited number of example tracks rather than a large-scale user study.
+
+Consequently, the system demonstrates a content-based recommendation approach, but its recommendations should not be considered a measure of individual listener preference.
+
+## Future Improvements
+
+Potential improvements include:
+
+- Experimenting with alternative clustering algorithms and different numbers of clusters.
+- Comparing alternative distance and similarity measures.
+- Incorporating genre information into the recommendation process.
+- Introducing user preferences and listening histories.
+- Developing a user interface to make recommendations easier to explore.
+- Expanding evaluation using a larger and more representative selection of tracks.
+- Investigating alternative methods for improving recommendation diversity.
+
+## Conclusion
+
+This project demonstrates how unsupervised machine learning can be applied to Spotify audio features to support a content-based music recommendation system.
+
+After cleaning and consolidating the original dataset, 89,741 unique tracks were available for analysis. Nine numerical audio features were selected and scaled using RobustScaler before applying K-Means clustering.
+
+The five-cluster model achieved a training silhouette score of 0.3500 and a test score of 0.3497, indicating a reasonably consistent clustering structure.
+
+A recommendation system was then developed using Euclidean distance to identify similar tracks within the same cluster. Artist filtering was introduced to improve recommendation diversity.
+
+The evaluation demonstrated that tracks can share similar audio characteristics even when their genre labels differ. This highlights the potential of audio-feature-based recommendations while also demonstrating the limitations of relying on genre labels alone.
+
+Overall, the project provides a foundation for further development of music recommendation systems using unsupervised machine learning.
