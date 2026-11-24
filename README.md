@@ -274,13 +274,30 @@ Install the required libraries using:
 pip install -r requirements.txt
 ```
 
-### 2. Run the Notebook
+### 2. Configure SSL Certificates (if required)
+
+If you encounter an SSL certificate error when downloading the dataset from Hugging Face, configure Conda to use the certificate file installed by `certifi`:
+
+```bash
+conda env config vars set SSL_CERT_FILE="<path-to-environment>/Lib/site-packages/certifi/cacert.pem"
+```
+
+Replace the placeholder with the path to your active environment.
+
+Deactivate and reactivate the environment for the change to take effect:
+
+```bash
+conda deactivate
+conda activate <environment-name>
+```
+
+### 3. Run the Notebook
 
 Open `music_analysis.ipynb` and run the cells in order.
 
 The notebook contains the exploratory analysis, data preparation, model development and evaluation.
 
-### 3. Generate Recommendations
+### 4. Generate Recommendations
 
 The recommendation system can be accessed through the modular Python files.
 
